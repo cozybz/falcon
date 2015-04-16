@@ -42,6 +42,22 @@ public class NettyTest {
 
     class TestHandler extends ChannelInboundHandlerAdapter {
         @Override
+        public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+            final ByteBuf time = ctx.alloc().buffer(4);
+            time.writeInt((int) (System.currentTimeMillis() / 1000L + 2208988800L));
+            final ChannelFuture f = ctx.writeAndFlush(time);
+
+            f.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) {
+                    assert f == future;
+                    ctx.close();
+                }
+            });
+
+        }
+
+        @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             ByteBuf in = (ByteBuf) msg;
             try {
