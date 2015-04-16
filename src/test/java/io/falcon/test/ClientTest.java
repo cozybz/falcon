@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * Created by cozybz@gmail.com on 2015/4/16.
  */
-public class ClientClass {
+public class ClientTest {
     @Test
     public void runClient() {
 
