@@ -5,6 +5,7 @@ import org.apache.commons.pool2.KeyedObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import java.net.Socket;
 
@@ -13,7 +14,14 @@ import java.net.Socket;
  * Created by quyao on 2015/6/28.
  */
 public class SocketPool {
-    private static KeyedObjectPool<String, Socket> socketPool = new GenericKeyedObjectPool<>(new SocketPollFactory());
+    private static KeyedObjectPool<String, Socket> socketPool;
+
+    static {
+        GenericKeyedObjectPoolConfig config = new GenericKeyedObjectPoolConfig();
+        config.setMaxIdlePerKey(1000);
+        config.setMaxTotalPerKey(1000);
+        socketPool = new GenericKeyedObjectPool<>(new SocketPollFactory(), config);
+    }
 
     public static Socket getSocket(String host, int port) {
         Socket socket = null;
