@@ -11,7 +11,7 @@ import java.net.Socket;
 
 /**
  * SocketPool
- * Created by quyao on 2015/6/28.
+ * Created by cozybz@gmail.com on 2015/6/28.
  */
 public class SocketPool {
     private static KeyedObjectPool<String, Socket> socketPool;

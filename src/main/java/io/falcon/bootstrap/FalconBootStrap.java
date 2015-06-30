@@ -11,6 +11,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
+ * FalconBootStrap
  * Created by cozybz@gmail.com on 2015/4/15.
  */
 public class FalconBootStrap {
@@ -18,7 +19,9 @@ public class FalconBootStrap {
         EventLoopGroup masterGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
+
         bootstrap.group(masterGroup, workerGroup).channel(NioServerSocketChannel.class);
+
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -27,7 +30,9 @@ public class FalconBootStrap {
                 socketChannel.pipeline().addLast(new FalconOutHandler());
             }
         });
-        bootstrap.option(ChannelOption.SO_BACKLOG, 128);
+
+        bootstrap.option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
+
         try {
             ChannelFuture future = bootstrap.bind(port).sync();
             future.channel().closeFuture().sync();

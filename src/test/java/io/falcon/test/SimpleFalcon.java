@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * SimpleFalcon
- * Created by quyao on 2015/6/27.
+ * Created by cozybz@gmail.com on 2015/6/27.
  */
 public class SimpleFalcon {
     @Test
