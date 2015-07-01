@@ -9,6 +9,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * FalconBootStrap
@@ -22,9 +24,12 @@ public class FalconBootStrap {
 
         bootstrap.group(masterGroup, workerGroup).channel(NioServerSocketChannel.class);
 
+        //bootstrap.handler(new LoggingHandler(LogLevel.INFO));
+
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {
+                //socketChannel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
                 socketChannel.pipeline().addLast(new FalconInHandler());
                 socketChannel.pipeline().addLast(new FalconCoreHandler());
                 socketChannel.pipeline().addLast(new FalconOutHandler());
