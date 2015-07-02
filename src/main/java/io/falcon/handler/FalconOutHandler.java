@@ -1,5 +1,7 @@
 package io.falcon.handler;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 
 /**
@@ -8,9 +10,10 @@ import io.netty.channel.*;
  */
 public class FalconOutHandler extends ChannelHandlerAdapter {
     @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("FalconOutHandler");
-        ChannelFuture f = ctx.writeAndFlush("hahaha");
-        f.addListener(ChannelFutureListener.CLOSE);
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        Long l = (Long) msg;
+        ByteBuf buf = Unpooled.directBuffer(8);
+        buf.writeLong(l);
+        ctx.writeAndFlush(buf);
     }
 }

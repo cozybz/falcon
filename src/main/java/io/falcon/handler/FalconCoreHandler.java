@@ -11,10 +11,11 @@ import io.netty.channel.ChannelHandlerContext;
 public class FalconCoreHandler extends ChannelHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("FalconCoreHandler");
-        String in = (String) msg;
-        System.out.print("FalconCoreHandler " + in + " ");
-        System.out.flush();
-        ctx.fireChannelWritabilityChanged();
+        //System.out.println("FalconCoreHandler channelRead");
+        Long l = (Long) msg;
+        if (l % 50000 == 0) {
+            System.out.println(System.currentTimeMillis() + " " + l);
+        }
+        ctx.fireChannelRead(++l);
     }
 }

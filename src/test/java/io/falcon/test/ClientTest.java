@@ -2,6 +2,8 @@ package io.falcon.test;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -21,70 +23,26 @@ public class ClientTest {
         b.group(workerGroup);
         b.channel(NioSocketChannel.class);
         b.option(ChannelOption.SO_KEEPALIVE, true);
+        b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new ChannelHandlerAdapter() {
                     @Override
-                    public void close(ChannelHandlerContext ctx, ChannelPromise future) throws Exception {
-                        System.out.println("client close");
-                        super.close(ctx, future);
-                    }
-
-                    @Override
-                    public void disconnect(ChannelHandlerContext ctx, ChannelPromise future) throws Exception {
-                        System.out.println("client disconnect");
-                        super.disconnect(ctx, future);
-                    }
-
-                    @Override
-                    public void deregister(ChannelHandlerContext ctx, ChannelPromise future) throws Exception {
-                        System.out.println("client deregister");
-                        super.deregister(ctx, future);
-                    }
-
-                    @Override
                     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                        System.out.println("client channelActive");
-                        ByteBuf byteBuf = ctx.alloc().buffer();
-                        byteBuf.writeInt(0);
-                        ctx.writeAndFlush(byteBuf).addListener(ChannelFutureListener.CLOSE);
-                    }
-
-                    @Override
-                    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-                        System.out.println("client registered");
-                        super.channelRegistered(ctx);
-                    }
-
-                    @Override
-                    public void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise future) throws Exception {
-                        System.out.println("client bind");
-                        super.bind(ctx, localAddress, future);
-                    }
-
-                    @Override
-                    public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise future) throws Exception {
-                        System.out.println("client connect");
-                        super.connect(ctx, remoteAddress, localAddress, future);
+                        //System.out.println("client channelActive");
+                        ByteBuf byteBuf = Unpooled.directBuffer(8);
+                        byteBuf.writeLong(0);
+                        ctx.writeAndFlush(byteBuf);
                     }
 
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        System.out.println("client read");
-                        super.channelRead(ctx, msg);
-                    }
-
-                    @Override
-                    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-                        System.out.println("client write");
-                        super.write(ctx, msg, promise);
-                    }
-
-                    @Override
-                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                        System.out.println("client exception");
-                        super.exceptionCaught(ctx, cause);
+                        //System.out.println("client read");
+                        ByteBuf in = (ByteBuf) msg;
+                        if (in.isReadable()) {
+                            ctx.writeAndFlush(in);
+                        }
                     }
                 });
             }

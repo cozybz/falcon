@@ -1,8 +1,6 @@
 package io.falcon.handler;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -13,14 +11,13 @@ import io.netty.channel.ChannelHandlerContext;
 public class FalconInHandler extends ChannelHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("FalconInHandler");
+        //System.out.println("FalconInHandler channelRead");
         ByteBuf in = (ByteBuf) msg;
         try {
             if (in.isReadable()) {
-                System.out.print("FalconInHandler " + (char) in.readByte() + "\n");
-                System.out.flush();
+                ctx.fireChannelRead(in.readLong());
             }
-            ctx.fireChannelRead("abc");
+
         } finally {
             in.release();
         }
